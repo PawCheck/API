@@ -1,0 +1,44 @@
+// This is your Prisma schema file
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL") // Ensure DATABASE_URL is set in your .env file
+}
+
+// Model for 'periksa' (examinations)
+model periksa {
+  id        Int               @id @default(autoincrement())
+  image     String // Path to the uploaded image
+  histories disease_history[] // Relation to disease_history
+}
+
+model diseaseCategory {
+  id               Int               @id @default(autoincrement())
+  name             String
+  description      String?
+  diseaseHistories disease_history[] // Relasi ke disease_history
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model disease_history {
+  id          Int             @id @default(autoincrement())
+  periksa_id  Int
+  category_id Int
+  category    diseaseCategory @relation(fields: [category_id], references: [id]) // Foreign key to 'diseaseCategory'
+  image       String
+  date        DateTime
+  description String
+  confidence  Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  periksa   periksa? @relation(fields: [periksaId], references: [id])
+  periksaId Int?
+}
